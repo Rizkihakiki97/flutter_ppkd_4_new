@@ -8,7 +8,7 @@ class ListViewWidgetDay10 extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'MYapp',
+          'MYapps',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
