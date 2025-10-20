@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ppkd_4_new/day_13/homescreen.dart';
 
 class Tugas6 extends StatefulWidget {
   const Tugas6({super.key});
@@ -91,9 +92,10 @@ class _Tugas6State extends State<Tugas6> {
           style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.grey),
+          side: const BorderSide(color: Color.fromARGB(255, 248, 247, 247)),
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
       ),
@@ -176,19 +178,48 @@ class _Tugas6State extends State<Tugas6> {
                   ),
                   const SizedBox(height: 10),
 
-                  buildButton(text: "Login", onPressed: () {}),
+                  buildButton(
+                    text: "Login",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Homescreen()),
+                      );
+                    },
+                  ),
 
                   const SizedBox(height: 25),
-                  const Text(
-                    "Or Sign In With",
-                    style: TextStyle(color: Colors.black54),
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(thickness: 1, color: Colors.grey),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: const Text(
+                          "Or Sign In With",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 10, 10, 10),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: const Divider(thickness: 1, color: Colors.grey),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 15),
 
                   buildSocialButton(
                     iconImage: 'assets/image/iconGoogle.png',
                     text: "Google",
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/googlepage');
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => Homepage()),
+                      // );
+                    },
                   ),
 
                   const SizedBox(height: 30),

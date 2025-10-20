@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ppkd_4_new/day_13/googlepage.dart';
+import 'package:flutter_ppkd_4_new/day_13/homescreen.dart';
 import 'package:flutter_ppkd_4_new/day_13/tugas_enam.dart';
 // import 'package:flutter_application_1/day_10/tugas_empat.dart';
 // import 'package:flutter_application_1/day_12/tugas_state1.dart';
@@ -18,6 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/homescreen': (context) => const Homescreen(),
+        '/googlepage': (context) => const Googlepage(),
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
