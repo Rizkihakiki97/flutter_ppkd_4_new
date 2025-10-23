@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_13/googlepage.dart';
-import 'package:flutter_ppkd_4_new/day_13/homescreen.dart';
-import 'package:flutter_ppkd_4_new/day_13/tugas_enam.dart';
+import 'package:flutter_ppkd_4_new/day_16/page_with_navbar.dart';
+// import 'package:flutter_ppkd_4_new/day_16/tugas7_checkbox.dart';
+// import 'package:flutter_ppkd_4_new/day_15/googlepage.dart';
+// import 'package:flutter_ppkd_4_new/day_15/homescreen.dart';
+// import 'package:flutter_ppkd_4_new/day_13/tugas_enam.dart';
 // import 'package:flutter_application_1/day_10/tugas_empat.dart';
 // import 'package:flutter_application_1/day_12/tugas_state1.dart';
 // import 'package:flutter_application_1/day_12/tugas5.dart';
@@ -21,8 +23,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/homescreen': (context) => const Homescreen(),
-        '/googlepage': (context) => const Googlepage(),
+        // '/homescreen': (context) => const Homescreen(),
+        // '/googlepage': (context) => const Googlepage(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -45,7 +47,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 148, 202, 230),
         ),
       ),
-      home: const Tugas6(),
+      home: const PageWithNavbar(),
     );
   }
 }
