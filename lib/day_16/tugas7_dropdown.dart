@@ -20,17 +20,17 @@ class _Tugas7DropdownState extends State<Tugas7Dropdown> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Production"),
-        backgroundColor: Color(0xff67C090),
+        title: const Text(""),
+        backgroundColor: const Color.fromARGB(0, 255, 255, 255),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Dropdown Menu
+            // Dropdown Menu 
             DropdownButton<String>(
               hint: const Text("Pilih kategori produk"),
-              
+
               value: selectedCategory,
               items: categories.map((String category) {
                 return DropdownMenuItem<String>(

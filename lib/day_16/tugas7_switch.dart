@@ -8,15 +8,17 @@ class Tugas7Switch extends StatefulWidget {
 }
 
 class _Tugas7SwitchState extends State<Tugas7Switch> {
-  bool isDarkMode = false; 
+  bool isDarkMode = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       appBar: AppBar(
-        title: const Text("SYSTEM App"),
-        backgroundColor: isDarkMode ? Colors.blueGrey[900] : Color(0xffB7B89F),
+        title: const Text(""),
+        backgroundColor: isDarkMode
+            ? const Color.fromARGB(255, 0, 0, 0)
+            : Color.fromARGB(255, 255, 255, 255),
       ),
       body: Center(
         child: Column(

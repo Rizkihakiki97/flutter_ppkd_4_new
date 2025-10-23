@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_16/page_with_navbar.dart';
+import 'package:flutter_ppkd_4_new/day_17/navbar_page.dart';
+// import 'package:flutter_ppkd_4_new/day_16/input_widgettugas7.dart';
+// import 'package:flutter_ppkd_4_new/day_16/page_with_navbar.dart';
 // import 'package:flutter_ppkd_4_new/day_16/tugas7_checkbox.dart';
 // import 'package:flutter_ppkd_4_new/day_15/googlepage.dart';
 // import 'package:flutter_ppkd_4_new/day_15/homescreen.dart';
@@ -47,7 +49,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 148, 202, 230),
         ),
       ),
-      home: const PageWithNavbar(),
+      home: const NavbarWidgetDay17(),
     );
   }
 }

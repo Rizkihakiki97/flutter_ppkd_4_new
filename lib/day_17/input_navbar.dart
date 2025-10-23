@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_16/tugas7_checkbox.dart';
-import 'package:flutter_ppkd_4_new/day_16/tugas7_datepicker.dart';
-import 'package:flutter_ppkd_4_new/day_16/tugas7_dropdown.dart';
-import 'package:flutter_ppkd_4_new/day_16/tugas7_switch.dart';
-import 'package:flutter_ppkd_4_new/day_16/tugas7_timepicker.dart';
+import 'package:flutter_ppkd_4_new/day_17/tugas9_listmap.dart';
+import 'package:flutter_ppkd_4_new/day_17/tugas9_listview.dart';
+import 'package:flutter_ppkd_4_new/day_17/tugas9_listview_model.dart';
 
-class InputWidgetDay16 extends StatefulWidget {
-  const InputWidgetDay16({super.key});
+class InputWidgetDay17 extends StatefulWidget {
+  const InputWidgetDay17({super.key});
 
   @override
-  State<InputWidgetDay16> createState() => _InputWidgetDay16State();
+  State<InputWidgetDay17> createState() => _InputWidgetDay17State();
 }
 
-class _InputWidgetDay16State extends State<InputWidgetDay16> {
+class _InputWidgetDay17State extends State<InputWidgetDay17> {
   //Index untuk menentukan menu mana yang aktif
   int _selectedIndex = 0;
 
   //List judul dan widget sesuai urutan
   final List<String> _titles = [
-    'Checkbox',
-    'Switched',
-    'Dropdown',
-    'Date Picker',
-    'Time Picker',
+    'Kategori',
+    'Kategori Minuman',
+    'Kategori Two',
+
+    // 'Checkbox',
+    // 'Switched',
+    // 'Dropdown',
+    // 'Date Picker',
+    // 'Time Picker',
   ];
 
   static const List<Widget> _widgetOption = [
-    Tugas7Checkbox(),
-    Tugas7Switch(),
-    Tugas7Dropdown(),
-    Tugas7Datepicker(),
-    Tugas7Timepicker(),
+    Tugas9ListmapDay17(),
+    Tugas9ListviewModelDay17(),
+    Tugas9List17Day(),
   ];
 
   void onTapDrawer(int index) {
@@ -45,7 +45,7 @@ class _InputWidgetDay16State extends State<InputWidgetDay16> {
     return Scaffold(
       appBar: AppBar(
         title: Text('System App'),
-        backgroundColor: const Color(0xff96A78D),
+        backgroundColor: const Color(0xffBADFDB),
       ),
 
       //Drawer menu di sisi kiri
@@ -55,7 +55,7 @@ class _InputWidgetDay16State extends State<InputWidgetDay16> {
           children: [
             // Header Drawer
             DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xffE8DFCA)),
+              decoration: const BoxDecoration(color: Color(0xffFFD5D5)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
@@ -76,41 +76,25 @@ class _InputWidgetDay16State extends State<InputWidgetDay16> {
             //List menu
             ListTile(
               leading: const Icon(Icons.check_box_outlined),
-              title: const Text('Checkbox'),
+              title: const Text('Category Two'),
               onTap: () {
                 setState(() => _selectedIndex = 0);
                 Navigator.pop(context); // Tutup drawer
               },
             ),
             ListTile(
-              leading: const Icon(Icons.toggle_on),
-              title: const Text('Switched'),
+              leading: const Icon(Icons.battery_charging_full),
+              title: const Text('Beverage Category'),
               onTap: () {
                 setState(() => _selectedIndex = 1);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.arrow_drop_down_circle_outlined),
-              title: const Text('Dropdown'),
+              leading: const Icon(Icons.category),
+              title: const Text('Category'),
               onTap: () {
                 setState(() => _selectedIndex = 2);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.calendar_today_outlined),
-              title: const Text('Date Picker'),
-              onTap: () {
-                setState(() => _selectedIndex = 3);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.access_time),
-              title: const Text('Time Picker'),
-              onTap: () {
-                setState(() => _selectedIndex = 4);
                 Navigator.pop(context);
               },
             ),

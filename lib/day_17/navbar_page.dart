@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ppkd_4_new/day_16/input_widgettugas7.dart';
+import 'package:flutter_ppkd_4_new/day_17/input_navbar.dart';
 
-class NavbarWidgetDay16 extends StatefulWidget {
-  const NavbarWidgetDay16({super.key});
+class NavbarWidgetDay17 extends StatefulWidget {
+  const NavbarWidgetDay17({super.key});
 
   @override
-  State<NavbarWidgetDay16> createState() => _NavbarWidgetDay16State();
+  State<NavbarWidgetDay17> createState() => _NavbarWidgetDay16State();
 }
 
-class _NavbarWidgetDay16State extends State<NavbarWidgetDay16> {
+class _NavbarWidgetDay16State extends State<NavbarWidgetDay17> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [const InputWidgetDay16(), _AboutPage()];
+  final List<Widget> _pages = [const InputWidgetDay17(), _AboutPage()];
 
   // final List<String> _titles = [
   //   'Home - Input Widget Day 16',
