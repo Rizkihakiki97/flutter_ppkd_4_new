@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_18/welcome18.dart';
+import 'package:flutter_ppkd_4_new/day_19/database/db_helper.dart';
+import 'package:flutter_ppkd_4_new/day_19/login_page.dart';
+import 'package:flutter_ppkd_4_new/day_19/model/user_model.dart';
 
-class Registrasi18 extends StatefulWidget {
-  const Registrasi18({super.key});
+class Registrasi19Screen extends StatefulWidget {
+  const Registrasi19Screen({super.key});
 
   @override
-  State<Registrasi18> createState() => _Registrasi18State();
+  State<Registrasi19Screen> createState() => _Registrasi19ScreenState();
 }
 
-class _Registrasi18State extends State<Registrasi18> {
+class _Registrasi19ScreenState extends State<Registrasi19Screen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController telponController = TextEditingController();
-  final TextEditingController domisiliController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   bool isVisibility = false;
 
   @override
@@ -62,21 +64,21 @@ class _Registrasi18State extends State<Registrasi18> {
                 },
               ),
               TextFormField(
-                controller: telponController,
+                controller: passwordController,
                 decoration: const InputDecoration(
-                  labelText: 'Nomor Telepon',
+                  labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
               ),
               TextFormField(
-                controller: domisiliController,
+                controller: phoneController,
                 decoration: const InputDecoration(
-                  labelText: 'Kota domilisi',
+                  labelText: 'Nomor Telepon',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Kota domilisi harus diisi';
+                    return 'nomor telpon harus diisi';
                   }
                   return null;
                 },
@@ -90,7 +92,7 @@ class _Registrasi18State extends State<Registrasi18> {
                         return AlertDialog(
                           title: Text('Pastikan data sesuai'),
                           content: Text(
-                            'Nama: ${nameController.text} \nEmail: ${emailController.text} \nNomor HP: ${telponController.text} \nKota Domisili: ${domisiliController.text}',
+                            'Nama: ${nameController.text} \nEmail: ${emailController.text} \npassword: ${passwordController.text} \nomor telpon: ${phoneController.text}',
                           ),
                           actions: [
                             TextButton(
@@ -100,15 +102,25 @@ class _Registrasi18State extends State<Registrasi18> {
                               child: Text('Cancel'),
                             ),
                             TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
+                              onPressed: () async {
+                                final UserModel data = UserModel(
+                                  email: emailController.text,
+                                  name: nameController.text,
+                                  phone: int.parse(phoneController.text),
+                                  password: passwordController.text,
+                                );
+                                await DbHelper.registerUser(data);
+                                // DbHelper.loginUser(
+                                //   email: emailController.text,
+                                //   password: passwordController.text,
+                                //   phone: int.parse(phoneController.text),
+                                // );
+                                // Navigator.of(context).pop();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return Welcome18(
-                                        
-                                      );
+                                      return FormLoginpage19();
                                     },
                                   ),
                                 );
@@ -122,6 +134,24 @@ class _Registrasi18State extends State<Registrasi18> {
                   }
                 },
                 child: Text('Submit'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("have an account? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
