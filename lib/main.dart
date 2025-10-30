@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_19/login_page.dart';
+// import 'package:flutter_ppkd_4_new/day_19/login_page.dart';
+import 'package:flutter_ppkd_4_new/home_page.dart';
 // import 'package:flutter_ppkd_4_new/day_19/form_loginpage.dart';
 // import 'package:flutter_ppkd_4_new/day_18/splash_screen.dart';
 // import 'package:flutter_ppkd_4_new/day_16/input_widgettugas7.dart';
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 148, 202, 230),
         ),
       ),
-      home: FormLoginpage19(),
+      home: HomePageMindcare(),
     );
   }
 }
