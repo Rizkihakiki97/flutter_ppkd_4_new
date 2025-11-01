@@ -11,7 +11,7 @@ class HomePageMindcare extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // ================= HEADER =================
+             
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
