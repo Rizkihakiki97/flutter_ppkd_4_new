@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ppkd_4_new/calendar_sessions_page.dart';
 import 'package:flutter_ppkd_4_new/home_page.dart';
+import 'package:flutter_ppkd_4_new/profile_page.dart';
 import 'package:flutter_ppkd_4_new/sessions_page.dart';
 // import 'package:flutter_ppkd_4_new/day_19/login_page.dart';
 // import 'package:flutter_ppkd_4_new/day_19/form_loginpage.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 148, 202, 230),
         ),
       ),
-      home: CalendarSessionsPage(),
+      home: ProfilePage(),
     );
   }
 }
