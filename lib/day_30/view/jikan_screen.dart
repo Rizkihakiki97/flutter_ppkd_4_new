@@ -12,53 +12,97 @@ class JikanScreen extends StatefulWidget {
   State<JikanScreen> createState() => _JikanScreenState();
 }
 
-class _JikanScreenState extends State<JikanScreen> {
+class _JikanScreenState extends State<JikanScreen>
+    with SingleTickerProviderStateMixin {
   late Future<List<Datum>> futureAnime;
-  List<Datum> allAnime = [];
-  List<Datum> filteredAnime = [];
+  List<Datum> _animeList = [];
+  List<Datum> _filteredAnime = [];
   final TextEditingController _searchController = TextEditingController();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     futureAnime = fetchAnime();
+    _loadAnime();
+
+    // Animasi untuk judul AppBar
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _fadeAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(_animationController);
+
+    _searchController.addListener(_filterAnime);
   }
 
-  /// 🔄 Fungsi untuk refresh data
-  Future<void> _refreshData() async {
+  Future<void> _loadAnime() async {
+    final animeData = await fetchAnime();
     setState(() {
-      futureAnime = fetchAnime();
+      _animeList = animeData;
+      _filteredAnime = animeData;
     });
   }
 
-  /// 🔍 Filter anime berdasarkan keyword
-  void _filterAnime(String query) {
-    final filtered = allAnime
-        .where(
-          (anime) =>
-              anime.title?.toLowerCase().contains(query.toLowerCase()) ?? false,
-        )
-        .toList();
+  void _filterAnime() {
+    final query = _searchController.text.toLowerCase();
     setState(() {
-      filteredAnime = filtered;
+      _filteredAnime = _animeList
+          .where((anime) => anime.title!.toLowerCase().contains(query))
+          .toList();
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.deepPurple.shade900,
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Anime List", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xff57564F),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: FadeTransition(
+          opacity: _fadeAnimation,
+          child: const Text(
+            "Anime List",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
       ),
       body: Stack(
         children: [
-          // 🔹 Background utama
+          // 🔹 Background utama dengan blur + fallback jika gagal load
           Positioned.fill(
             child: Image.network(
-              "https://wallpaperaccess.com/full/1819121.jpg",
+              "https://images8.alphacoders.com/131/1319872.jpg",
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.deepPurple, Colors.black87],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           Positioned.fill(
@@ -69,251 +113,184 @@ class _JikanScreenState extends State<JikanScreen> {
           ),
 
           // 🔹 Konten utama
-          FutureBuilder<List<Datum>>(
-            future: futureAnime,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    "Error: ${snapshot.error}",
-                    style: const TextStyle(color: Colors.redAccent),
+          Column(
+            children: [
+              // 🔍 Search bar
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextField(
+                  controller: _searchController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Cari anime...',
+                    hintStyle: const TextStyle(color: Colors.white54),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.1),
+                    prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
-                );
-              }
+                ),
+              ),
 
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text(
-                    "Tidak ada data anime ditemukan.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
-              }
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _loadAnime,
+                  backgroundColor: Colors.deepPurple,
+                  color: Colors.white,
+                  child: FutureBuilder<List<Datum>>(
+                    future: futureAnime,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        );
+                      }
 
-              allAnime = snapshot.data!;
-              filteredAnime = _searchController.text.isEmpty
-                  ? allAnime
-                  : filteredAnime;
-
-              return RefreshIndicator(
-                onRefresh: _refreshData,
-                color: Colors.white,
-                backgroundColor: Colors.deepPurple,
-                child: ListView(
-                  children: [
-                    // 🔹 Halaman Depan (Hero Section)
-                    Container(
-                      height: 220,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.network(
-                            "https://images7.alphacoders.com/130/1305953.jpeg",
-                            fit: BoxFit.cover,
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            "Error: ${snapshot.error}",
+                            style: const TextStyle(color: Colors.redAccent),
                           ),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        );
+                      }
+
+                      if (_filteredAnime.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            "Tidak ada anime ditemukan.",
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemCount: _filteredAnime.length,
+                        itemBuilder: (context, index) {
+                          final anime = _filteredAnime[index];
+                          final imageUrl =
+                              anime.images?["jpg"]?.imageUrl ??
+                              "https://via.placeholder.com/150x200.png?text=No+Image";
+                          final title = anime.title ?? "No Title";
+                          final score = anime.score?.toString() ?? "-";
+                          final type = anime.type ?? "Unknown";
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  transitionDuration: const Duration(
+                                    milliseconds: 400,
+                                  ),
+                                  pageBuilder: (_, __, ___) =>
+                                      AnimeDetailScreen(anime: anime),
+                                  transitionsBuilder:
+                                      (_, animation, __, child) {
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: child,
+                                        );
+                                      },
+                                ),
+                              );
+                            },
                             child: Container(
-                              color: Colors.black.withOpacity(0.4),
-                            ),
-                          ),
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  "Welcome to Jikan Anime 🎬",
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  "Temukan anime terbaik untukmu!",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // 🔹 Search Bar
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: _filterAnime,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: "Cari anime...",
-                          hintStyle: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: Colors.white70,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // 🔹 List Anime
-                    ...filteredAnime.map((anime) {
-                      final imageUrl =
-                          anime.images?["jpg"]?.imageUrl ??
-                          "https://via.placeholder.com/150x200.png?text=No+Image";
-                      final title = anime.title ?? "No Title";
-                      final score = anime.score?.toString() ?? "-";
-                      final type = anime.type ?? "Unknown";
-
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              transitionDuration: const Duration(
-                                milliseconds: 400,
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
                               ),
-                              pageBuilder: (_, __, ___) =>
-                                  AnimeDetailScreen(anime: anime),
-                              transitionsBuilder: (_, animation, __, child) =>
-                                  FadeTransition(
-                                    opacity: animation,
-                                    child: child,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
                                   ),
+                                ],
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Gambar anime
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
+                                    ),
+                                    child: Image.network(
+                                      imageUrl,
+                                      width: 100,
+                                      height: 130,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                width: 100,
+                                                height: 130,
+                                                color: Colors.grey.shade300,
+                                                child: const Icon(
+                                                  Icons.broken_image,
+                                                  size: 40,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                    ),
+                                  ),
+                                  // Info anime
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            title,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "🎬 $type",
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            "⭐ Score: $score",
+                                            style: const TextStyle(
+                                              color: Colors.amberAccent,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Gambar anime
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  bottomLeft: Radius.circular(16),
-                                ),
-                                child: Image.network(
-                                  imageUrl,
-                                  width: 100,
-                                  height: 130,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(
-                                        width: 100,
-                                        height: 130,
-                                        color: Colors.grey.shade300,
-                                        child: const Icon(
-                                          Icons.broken_image,
-                                          size: 40,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                ),
-                              ),
-
-                              // Info anime
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        title,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        "🎬 $type",
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        "⭐ Score: $score",
-                                        style: const TextStyle(
-                                          color: Colors.amberAccent,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       );
-                    }),
-                  ],
+                    },
+                  ),
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ],
       ),
