@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ppkd_4_new/day_33/views/registrasi_screen.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -165,7 +166,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Switch(
                           value: true,
-                          activeColor: Colors.blueAccent,
+                          activeThumbColor: Colors.blueAccent,
                           onChanged: (_) {},
                         ),
                       ],
@@ -203,7 +204,12 @@ class ProfilePage extends StatelessWidget {
                 ),
                 child: Center(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Registrasi33()),
+                      );
+                    },
                     icon: const Icon(Icons.logout, color: Colors.red),
                     label: const Text(
                       "Logout",

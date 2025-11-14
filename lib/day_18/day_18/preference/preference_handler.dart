@@ -2,17 +2,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceHandler {
   static const String isLogin = "isLogin";
+  static const String isToken = "isToken";
 
-  //Save data login pada saat login
-  static saveLogin(bool value) async {
+  static saveToken(String value) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setBool(isLogin, value);
+    prefs.setString(isToken, value);
   }
 
   //Ambil data login pada saat mau login / ke dashboard
   static getLogin() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(isLogin);
+  }
+
+  static getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(isToken);
   }
 
   //Hapus data login pada saat logout

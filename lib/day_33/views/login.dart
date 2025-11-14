@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_15/homescreen.dart';
+import 'package:flutter_ppkd_4_new/day_18/welcome18.dart';
+import 'package:flutter_ppkd_4_new/day_19/database/db_helper.dart';
+import 'package:flutter_ppkd_4_new/day_19/view/registrasi19_screen.dart';
 
-class AppsLogin extends StatefulWidget {
-  const AppsLogin({super.key});
+class FormLoginpage33 extends StatefulWidget {
+  const FormLoginpage33({super.key});
   static const id = "apps_login_screen18";
 
   @override
-  State<AppsLogin> createState() => _AppsLoginState();
+  State<FormLoginpage33> createState() => _FormLoginpage33State();
 }
 
-class _AppsLoginState extends State<AppsLogin> {
+class _FormLoginpage33State extends State<FormLoginpage33> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   bool _obscurePassword = true;
 
   Widget buildTextFieldNew({
@@ -20,6 +24,9 @@ class _AppsLoginState extends State<AppsLogin> {
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     Widget? suffixIcon,
+    bool isPassword = false,
+    TextEditingController? controller,
+    FormFieldValidator<String>? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,9 +40,11 @@ class _AppsLoginState extends State<AppsLogin> {
           ),
         ),
         const SizedBox(height: 6),
-        TextField(
-          obscureText: obscureText,
+        TextFormField(
+          controller: controller,
+          obscureText: isPassword ? _obscurePassword : obscureText,
           keyboardType: keyboardType,
+          validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
             contentPadding: const EdgeInsets.symmetric(
@@ -43,7 +52,20 @@ class _AppsLoginState extends State<AppsLogin> {
               vertical: 14,
             ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(26)),
-            suffixIcon: suffixIcon,
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                : suffixIcon,
           ),
         ),
       ],
@@ -135,14 +157,28 @@ class _AppsLoginState extends State<AppsLogin> {
                   const SizedBox(height: 40),
 
                   buildTextFieldNew(
+                    controller: emailController,
                     label: "Email Address",
                     hintText: "Masukan Email Anda",
                     keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Email tidak boleh kosong";
+                      } else if (!value.contains('@')) {
+                        return "Email tidak valid";
+                      } else if (!RegExp(
+                        r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
+                      ).hasMatch(value)) {
+                        return "Format Email tidak valid";
+                      }
+                      return null;
+                    },
                   ),
 
                   const SizedBox(height: 20),
 
                   buildTextFieldNew(
+                    controller: phoneController,
                     label: "Phone Number",
                     hintText: "+6285",
                     keyboardType: TextInputType.phone,
@@ -153,19 +189,16 @@ class _AppsLoginState extends State<AppsLogin> {
                     label: "Password",
                     hintText: "Masukan Password Anda",
                     obscureText: _obscurePassword,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
+                    isPassword: true,
+                    controller: passwordController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password tidak boleh kosong";
+                      } else if (value.length < 6) {
+                        return "Password minimal 6 karakter";
+                      }
+                      return null;
+                    },
                   ),
 
                   const SizedBox(height: 10),
@@ -184,11 +217,31 @@ class _AppsLoginState extends State<AppsLogin> {
 
                   buildButton(
                     text: "Login",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Homescreen()),
+                    onPressed: () async {
+                      final email = emailController.text.trim();
+                      final password = passwordController.text.trim();
+                      final phone = phoneController.text.trim();
+                      final data = await DbHelper.loginUser(
+                        email: email,
+                        password: password,
+                        phone: int.parse(phone),
                       );
+                      // final data = await DbHelper.registerUser(
+                      //   nama : nameController.text,
+                      //   email: emailController.text,
+                      //   password: passwordController.text,
+                      //   phone: int.parse(phoneController.text),
+                      // );
+                      if (data != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Welcome18()),
+                        );
+                      } else {
+                        ScaffoldMessenger(
+                          child: Text("Email Pasword Anda Salah"),
+                        );
+                      }
                     },
                   ),
 
@@ -233,7 +286,14 @@ class _AppsLoginState extends State<AppsLogin> {
                     children: [
                       const Text("Don't have an account? "),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Registrasi19Screen(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           "Sign Up",
                           style: TextStyle(

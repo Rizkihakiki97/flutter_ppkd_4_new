@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ppkd_4_new/day_15/homescreen.dart';
+// import 'package:flutter_ppkd_4_new/day_33/login_botton.dart';
 
-class AppsLogin extends StatefulWidget {
-  const AppsLogin({super.key});
-  static const id = "apps_login_screen18";
+class LoginBotton extends StatefulWidget {
+  const LoginBotton({super.key});
+  static const id = "/register_day33";
 
   @override
-  State<AppsLogin> createState() => _AppsLoginState();
+  State<LoginBotton> createState() => _LoginBottonState();
 }
 
-class _AppsLoginState extends State<AppsLogin> {
+class _LoginBottonState extends State<LoginBotton> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = true;
