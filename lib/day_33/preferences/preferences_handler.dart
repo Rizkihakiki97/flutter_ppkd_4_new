@@ -4,10 +4,14 @@ class PreferenceHandler {
   static const String isLogin = "isLogin";
   static const String isToken = "isToken";
 
- 
   static saveToken(String value) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(isToken, value);
+  }
+
+  static saveLogin(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(isLogin, value);
   }
 
   //Ambil data login pada saat mau login / ke dashboard

@@ -1,8 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ppkd_4_new/day_18/day_18/preference/preference_handler.dart';
+import 'package:flutter_ppkd_4_new/day_33/models/user_dart';
+import 'package:flutter_ppkd_4_new/day_33/service/api.dart';
 import 'package:flutter_ppkd_4_new/day_33/views/registrasi_screen.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  User? user;
+  @override
+  void initState() {
+    super.initState();
+    loadProfile();
+  }
+
+  loadProfile() async {
+    try {
+      final result = await AuthAPI.getProfile();
+      setState(() {
+        user = result;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,16 +91,16 @@ class ProfilePage extends StatelessWidget {
                       backgroundImage: AssetImage('assets/image/orang1.png'),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      "Rizky",
+                    Text(
+                      user?.name ?? "Loading",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      "muhammdhakiki97@email.com",
+                    Text(
+                      user?.email ?? "Loading",
                       style: TextStyle(color: Colors.black54),
                     ),
                     const SizedBox(height: 3),
@@ -103,7 +129,73 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.person_outlined,
               title: "Edit Profile",
               subtitle: "Update your personal information",
-              onTap: () {},
+              onTap: () {
+                final nameController = TextEditingController(
+                  text: user?.name ?? "",
+                );
+                final parentContext = context;
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      title: const Text("Edit Profile"),
+                      content: TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Nama",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          child: const Text("Batal"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        ElevatedButton(
+                          child: const Text("Simpan"),
+                          onPressed: () async {
+                            final newName = nameController.text.trim();
+
+                            if (newName.isEmpty) return;
+
+                            Navigator.pop(context); // tutup dialog
+
+                            final token = await PreferenceHandler.getToken();
+
+                            try {
+                              final result = await AuthAPI.UpdateProfile(
+                                nama: newName,
+                                token: token!,
+                              );
+
+                              // Update UI
+                              setState(() {
+                                user = result.data!.user;
+                              });
+
+                              // Notifikasi success
+                              ScaffoldMessenger.of(parentContext).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Profil berhasil diperbarui"),
+                                ),
+                              );
+
+                              await loadProfile();
+                            } catch (e) {
+                              ScaffoldMessenger.of(parentContext).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
               color: Colors.blue,
             ),
             _ProfileMenu(

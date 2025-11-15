@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ppkd_4_new/day_18/welcome18.dart';
-import 'package:flutter_ppkd_4_new/day_19/database/db_helper.dart';
-import 'package:flutter_ppkd_4_new/day_19/view/registrasi19_screen.dart';
+import 'package:flutter_ppkd_4_new/day_33/extension/navigation.dart';
+import 'package:flutter_ppkd_4_new/day_33/models/user_dart';
+import 'package:flutter_ppkd_4_new/day_33/preferences/preferences_handler.dart';
+import 'package:flutter_ppkd_4_new/day_33/service/api.dart';
+import 'package:flutter_ppkd_4_new/day_33/views/navbar.dart';
+import 'package:flutter_ppkd_4_new/day_33/views/registrasi_screen.dart';
 
 class FormLoginpage33 extends StatefulWidget {
   const FormLoginpage33({super.key});
@@ -12,10 +15,12 @@ class FormLoginpage33 extends StatefulWidget {
 }
 
 class _FormLoginpage33State extends State<FormLoginpage33> {
+  RegisterModel user = RegisterModel();
+  final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   bool _obscurePassword = true;
 
   Widget buildTextFieldNew({
@@ -138,173 +143,208 @@ class _FormLoginpage33State extends State<FormLoginpage33> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Welcome Back",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Login to access your account",
-                    style: TextStyle(fontSize: 15, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 40),
-
-                  buildTextFieldNew(
-                    controller: emailController,
-                    label: "Email Address",
-                    hintText: "Masukan Email Anda",
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Email tidak boleh kosong";
-                      } else if (!value.contains('@')) {
-                        return "Email tidak valid";
-                      } else if (!RegExp(
-                        r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
-                      ).hasMatch(value)) {
-                        return "Format Email tidak valid";
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  buildTextFieldNew(
-                    controller: phoneController,
-                    label: "Phone Number",
-                    hintText: "+6285",
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 20),
-
-                  buildTextFieldNew(
-                    label: "Password",
-                    hintText: "Masukan Password Anda",
-                    obscureText: _obscurePassword,
-                    isPassword: true,
-                    controller: passwordController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password tidak boleh kosong";
-                      } else if (value.length < 6) {
-                        return "Password minimal 6 karakter";
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: Colors.redAccent, fontSize: 14),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Welcome Back",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Login to access your account",
+                      style: TextStyle(fontSize: 15, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 40),
 
-                  buildButton(
-                    text: "Login",
-                    onPressed: () async {
-                      final email = emailController.text.trim();
-                      final password = passwordController.text.trim();
-                      final phone = phoneController.text.trim();
-                      final data = await DbHelper.loginUser(
-                        email: email,
-                        password: password,
-                        phone: int.parse(phone),
-                      );
-                      // final data = await DbHelper.registerUser(
-                      //   nama : nameController.text,
-                      //   email: emailController.text,
-                      //   password: passwordController.text,
-                      //   phone: int.parse(phoneController.text),
-                      // );
-                      if (data != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Welcome18()),
-                        );
-                      } else {
-                        ScaffoldMessenger(
-                          child: Text("Email Pasword Anda Salah"),
-                        );
-                      }
-                    },
-                  ),
+                    buildTextFieldNew(
+                      controller: emailController,
+                      label: "Email Address",
+                      hintText: "Masukan Email Anda",
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email tidak boleh kosong";
+                        } else if (!value.contains('@')) {
+                          return "Email tidak valid";
+                        } else if (!RegExp(
+                          r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
+                        ).hasMatch(value)) {
+                          return "Format Email tidak valid";
+                        }
+                        return null;
+                      },
+                    ),
+                    buildTextFieldNew(
+                      controller: passwordController,
+                      label: "Password",
+                      hintText: "Masukan Password Anda",
+                      keyboardType: TextInputType.visiblePassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email tidak boleh kosong";
+                        }
+                        return null;
+                      },
+                    ),
 
-                  const SizedBox(height: 25),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(thickness: 1, color: Colors.grey),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                    const SizedBox(height: 20),
+
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {},
                         child: const Text(
-                          "Or Sign In With",
+                          "Forgot Password?",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 10, 10, 10),
+                            color: Colors.redAccent,
+                            fontSize: 14,
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: const Divider(thickness: 1, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
+                    ),
+                    const SizedBox(height: 10),
 
-                  buildSocialButton(
-                    iconImage: 'assets/image/iconGoogle.png',
-                    text: "Google",
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/googlepage');
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => Homepage()),
-                      // );
-                    },
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Don't have an account? "),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Registrasi19Screen(),
-                            ),
+                    buildButton(
+                      text: "Login",
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          try {
+                            final RegisterModel result =
+                                await AuthAPI.LoginUser(
+                                  email: emailController.text,
+                                  password: passwordController.text,
+                                );
+                            PreferenceHandler.saveLogin(true);
+                            setState(() {
+                              isLoading = false;
+                              user = result;
+                            });
+                            PreferenceHandler.saveToken(result.data!.token!);
+                            context.pushReplacement(BottomNavbar());
+                          } catch (e) {
+                            setState(() => isLoading = false);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Login Berhasil")),
                           );
-                        },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Colors.blueAccent,
-                            fontWeight: FontWeight.bold,
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("validate eror"),
+                                content: Text("Tolong isi semua dengan benar"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Ok"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+
+                        // final data = await DbHelper.registerUser(
+                        //   nama : nameController.text,
+                        //   email: emailController.text,
+                        //   password: passwordController.text,
+                        //   phone: int.parse(phoneController.text),
+                        // );
+                        // if (data != null) {
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => Welcome18(),
+                        //     ),
+                        //   );
+                        // } else {
+                        //   ScaffoldMessenger(
+                        //     child: Text("Email Pasword Anda Salah"),
+                        //   );
+                        // }
+                      },
+                    ),
+
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(thickness: 1, color: Colors.grey),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: const Text(
+                            "Or Sign In With",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 10, 10, 10),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        Expanded(
+                          child: const Divider(
+                            thickness: 1,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+
+                    buildSocialButton(
+                      iconImage: 'assets/image/iconGoogle.png',
+                      text: "Google",
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/googlepage');
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => Homepage()),
+                        // );
+                      },
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Don't have an account? "),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Registrasi33(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.blueAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
