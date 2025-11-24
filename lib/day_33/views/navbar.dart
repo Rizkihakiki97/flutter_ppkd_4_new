@@ -21,7 +21,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     Text("data"),
     // ChatPage(),|
     Text("data"),
-    ProfilePage(),
+    // ProfilePage(),
   ];
 
   @override
@@ -40,7 +40,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
             _buildNavItem(Icons.home_rounded, "Home", 0),
             _buildNavItem(Icons.chat_bubble_outline_rounded, "Chat", 1),
             _buildNavItem(Icons.calendar_today_rounded, "calender", 2),
-            _buildNavItem(Icons.person_outline_rounded, "Profile", 3),
+            // _buildNavItem(Icons.person_outline_rounded, "Profile", 3),
           ],
         ),
       ),
