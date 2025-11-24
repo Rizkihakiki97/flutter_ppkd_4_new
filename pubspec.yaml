@@ -29,9 +29,14 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   calendar_date_picker2: ^2.0.1
+  cloud_firestore: ^6.1.0
   cupertino_icons: ^1.0.8
+  firebase_auth: ^6.1.2
+  firebase_core: ^4.2.1
   flutter:
     sdk: flutter
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
   http: ^1.6.0
   motion_tab_bar_v2: ^0.4.0
   shared_preferences: ^2.5.3
